@@ -14,10 +14,10 @@ and [libapache2-mod-security2](https://packages.debian.org/bullseye/libapache2-m
 
 Other operating systems may or may not behave differently!
 
+------
 
 ### Configure Apache
--    Install the included Apache2 log format configuration file to `/etc/apache2/conf-avaliable/local-log-format.conf`
-     * See note below
+-    Install the included Apache2 log format configuration file to `/etc/apache2/conf-avaliable/local-log-format.conf` (See note below)
 -    Enable the config:
      ```bash
      sudo a2enconf local-log-format
@@ -45,11 +45,8 @@ Other operating systems may or may not behave differently!
 -    Run from this directory. eg: `./mali`
 -    OR
 -    Symlink somewhere in `$PATH`
-  -    Single user example:
-    -    `ln -s mali $HOME/.local/bin/mali`
-    -    `ln -s mali $HOME/bin/mali`
-  -    Multi user example:
-    -    `sudo ln -s mali /usr/local/bin/mali`
+  -    Single user example: `ln -s mali $HOME/.local/bin/mali` or `ln -s mali $HOME/bin/mali`
+  -    Multi user example: `sudo ln -s mali /usr/local/bin/mali`
 -    Set the location of Apache's access.log and error.log if they differ from the 
      defaults (`/var/log/{apache,error}.log`).
 
@@ -136,8 +133,8 @@ Severity: CRITICAL
 -----
 
 #### Additional Information
-\* This is in regards to the naming of `/etc/apache2/conf-available/local-logs.conf`:
-According to `/usr/share/doc/apache2/README.Debian.gz`:
+In regards to the naming of `/etc/apache2/conf-available/local-logs.conf`:  
+According to `/usr/share/doc/apache2/README.Debian.gz`:  
 >The local administrator should use file names starting with 'local-' to avoid
 >name clashes with files installed by packages.
 

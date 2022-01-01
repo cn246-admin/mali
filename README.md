@@ -95,35 +95,39 @@ SSL Cipher: TLS_AES_128_GCM_SHA256
 
 ERROR INFO
 ----------
-Rule ID: 921110
+Rule ID: 921110 (/usr/share/modsecurity-crs/rules/REQUEST-921-PROTOCOL-ATTACK.conf)
 Msg: HTTP Request Smuggling Attack
 Severity: CRITICAL
 
-Rule ID: 921110
+Rule ID: 921110 (/usr/share/modsecurity-crs/rules/REQUEST-921-PROTOCOL-ATTACK.conf)
 Msg: HTTP Request Smuggling Attack
 Severity: CRITICAL
 
-Rule ID: 932100
+Rule ID: 932100 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
 Msg: Remote Command Execution: Unix Command Injection
 Severity: CRITICAL
 
-Rule ID: 932105
+Rule ID: 932105 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
 Msg: Remote Command Execution: Unix Command Injection
 Severity: CRITICAL
 
-Rule ID: 932115
+Rule ID: 932110 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
 Msg: Remote Command Execution: Windows Command Injection
 Severity: CRITICAL
 
-Rule ID: 932140
-Msg: Remote Command Execution: Windows FOR/IF Command Found
+Rule ID: 932115 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
+Msg: Remote Command Execution: Windows Command Injection
 Severity: CRITICAL
 
-Rule ID: 932200
+Rule ID: 932130 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
+Msg: Remote Command Execution: Unix Shell Expression Found
+Severity: CRITICAL
+
+Rule ID: 932200 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
 Msg: RCE Bypass Technique
 Severity: CRITICAL
 
-Rule ID: 941320
+Rule ID: 941320 (/usr/share/modsecurity-crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf)
 Msg: Possible XSS Attack Detected - HTML Tag Handler
 Severity: CRITICAL
 

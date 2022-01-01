@@ -80,15 +80,15 @@ def errorParse():
                     lst = lst.replace(']\n', '')
                     key, value = lst.split(' ', 1)
 
-                    if lst.startswith("ModSecurity"):
-                        new = lst.split(' [')
-                        for i in new:
-                            lst = i.lstrip()
-                            lst = lst.replace('"', '')
-                            lst = lst.replace(':', '')
-                            key, value = lst.split(' ', 1)
+                if lst.startswith("ModSecurity"):
+                    new = lst.split(' [')
+                    for i in new:
+                        lst = i.lstrip()
+                        lst = lst.replace('"', '')
+                        lst = lst.replace(':', '')
+                        key, value = lst.split(' ', 1)
 
-                    error_dict[key] = value
+                error_dict[key] = value
 
                 if "unique_id" in error_dict:
                     if error_dict['unique_id'] == access_dict['unique_id']:

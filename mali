@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+
+import os
+from os import system
+import re
+import sys
+import time
+
+access_log = "/var/log/apache2/access.log"
+error_log = "/var/log/apache2/error.log"
+
+def clear():
+    system('clear')
+
+# "tail" log file function
+def tail(file, n=1, bs=1024):
+    f = open(file)
+    f.seek(0,2)
+    l = f.read(1).count('\n')
+    B = f.tell()
+    while n >= l and B > 0:
+            block = min(bs, B)
+            B -= block
+            f.seek(B, 0)
+            l += f.read(block).count('\n')
+    f.seek(B, 0)
+    l = min(l,n)
+    lines = f.readlines()[-l:]
+    f.close()
+    return lines
+
+# Parse access.log
+def accessParse():
+    alines = tail(access_log, 1)
+
+    for line in alines:
+        alist = line.split(']')
+
+        global access_dict
+        access_dict = {}
+        for i in alist:
+            strip = i.lstrip()
+            if strip.startswith("["):
+                strip = strip.replace('[', '')
+                strip = strip.replace('"', '')
+                (key,val) = strip.split(' ', 1)
+                access_dict[key] = val
+
+        print(
+            f'CURRENT REQUEST\n'
+            f'---------------\n'
+            f"Request Time: {access_dict['time']}\n"
+            f"Unique ID: {access_dict['unique_id']}\n"
+            f"Remote Host: {access_dict['remote_host']}\n"
+            f"User Agent: {access_dict['remote_user_agent']}\n"
+            f"HTTP Referer: {access_dict['http_referer']}\n"
+            f"HTTP Request: {access_dict['http_request']}\n"
+            f"HTTP Status: {access_dict['http_status']}\n"
+            f"SSL Protocol: {access_dict['ssl_protocol']}\n"
+            f"SSL Cipher: {access_dict['ssl_cipher']}\n"
+            f'\n'
+            f"ERROR INFO\n"
+            f"----------"
+        )
+
+# Parse error.log
+def errorParse():
+    elines = tail(error_log, 100)
+    for line in elines:
+        if line.startswith('[time'):
+            elist = line.split('] ')
+
+            global error_dict
+            error_dict = {}
+            for i in elist:
+                lst = i.lstrip()
+                if lst.startswith("["):
+                    lst = lst.replace('[', '')
+                    lst = lst.replace('"', '')
+                    lst = lst.replace(']\n', '')
+                    key, value = lst.split(' ', 1)
+
+                    if lst.startswith("ModSecurity"):
+                        new = lst.split(' [')
+                        for i in new:
+                            lst = i.lstrip()
+                            lst = lst.replace('"', '')
+                            lst = lst.replace(':', '')
+                            key, value = lst.split(' ', 1)
+
+                    error_dict[key] = value
+
+                if "unique_id" in error_dict:
+                    if error_dict['unique_id'] == access_dict['unique_id']:
+                        if "file" in error_dict:
+                            print(f"Rule ID: {error_dict['id']} ({error_dict['file']})" )
+                        else:
+                            print(f"Rule ID: {error_dict['id']}")
+                        print(f"Msg: {error_dict['msg']}")
+                        if "severity" in error_dict:
+                            print(f"Severity: {error_dict['severity']}")
+                        print()
+
+
+# Watch access.log for changes
+class Watcher(object):
+    def __init__(self):
+        self._cached_stamp = 0
+        self.filename = access_log
+
+    def monitor(self):
+        stamp = os.stat(self.filename).st_mtime
+        if stamp != self._cached_stamp:
+            # Clear the screen
+            clear()
+
+            self._cached_stamp = stamp
+
+            # Process last request in access.log
+            accessParse()
+
+            # Process error requests
+            errorParse()
+
+
+# Run!
+follow = Watcher()
+while True:
+    try:
+        time.sleep(1)
+        follow.monitor()
+    except KeyboardInterrupt:
+        print('\nDone')
+        break
+    except:
+        print(f'Unhandled error: {sys.exc_info()[0]}')

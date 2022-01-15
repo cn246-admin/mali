@@ -47,91 +47,123 @@ Other operating systems may or may not behave differently!
 -    Symlink somewhere in `$PATH`
   -    Single user example: `ln -s mali $HOME/.local/bin/mali` or `ln -s mali $HOME/bin/mali`
   -    Multi user example: `sudo ln -s mali /usr/local/bin/mali`
--    Set the location of Apache's access.log and error.log if they differ from the 
+-    Set the location of Apache's access.log and error.log if they differ from the
      defaults (`/var/log/{apache,error}.log`).
 
 
 ## Use
-Not much to using it (yet?).
+Run it in a terminal with either the `-a` flag for access.log or the `-e` flag
+for error.log and it will update the information as requests are made.
 
-Just run it in a terminal and it will update the information as requests are made.
+If the access.log has a matching unique id in the error.log, the unique_id will
+be colored red in the access log output.
 
-If the request has a matching `error.log` entry, it will print the relevant ModSecurity
-rule information for further investigation by the Admin.
+This works great if you use a [screen](https://www.gnu.org/software/screen/) or [tmux](https://github.com/tmux/tmux) session
+with the screen split down the middle. One side is running `mali -a` and the other
+side running `mali -e`.
 
 
 ## Output
-Non-error request:
+**Access log:**
+Run with `mali -a`:
 ```
-CURRENT REQUEST
----------------
-Request Time: 16:43:03.853194-0500
-Unique ID: YdDK5_xMMXZYFSfguHCrHwAATQI
-Remote Host: 192.168.120.12
-User Agent: Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0
-HTTP Referer: https://example.com/programming/web-dev/apache/modsecurity
-HTTP Request: GET /lib/exe/taskrunner.php?id=programming%3Aweb-dev%3Aapache%3Amodsecurity&1641073383 HTTP/2.0
+Request Time: 20:39:09.850956-0500
+Unique ID: YeIlvUbeVrdtlNQf-J34AgAASAc
+Remote Host: 108.162.219.153
+User Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.0
+HTTP Referer: https://www.chucknemeth.com/laptop/lenovo-x230/flash-lenovo-x230-coreboot
+HTTP Request: GET /_media/laptop/lenovo-x230/coreboot/x230-nconfig-02-mainboard.png?w=250&h=134&tok=b0b111 HTTP/2.0
 HTTP Status: 200
 SSL Protocol: TLSv1.3
-SSL Cipher: TLS_AES_128_GCM_SHA256
+SSL Cipher: TLS_AES_256_GCM_SHA384
 
-ERROR INFO
-----------
-```
-
-Error request:
-```
-CURRENT REQUEST
----------------
-Request Time: 16:45:31.606176-0500
-Unique ID: YdDLe0ygn2IEQeNePODpRAAAQgA
-Remote Host: 192.168.120.12
-User Agent: Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0
-HTTP Referer: https://example.com/programming/web-dev/apache/modsecurity?do=edit
-HTTP Request: POST /programming/web-dev/apache/modsecurity?do=edit HTTP/2.0
-HTTP Status: 403
+Request Time: 20:39:09.864622-0500
+Unique ID: YeIlvUbeVrdtlNQf-J34BQAATxY
+Remote Host: 108.162.219.21
+User Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.0
+HTTP Referer: https://www.chucknemeth.com/laptop/lenovo-x230/flash-lenovo-x230-coreboot
+HTTP Request: GET /_media/usb-device/ch341a/3v-mod/ch341a-mosi-3.3v.jpg?w=250&h=165&tok=d1e2f7 HTTP/2.0
+HTTP Status: 200
 SSL Protocol: TLSv1.3
-SSL Cipher: TLS_AES_128_GCM_SHA256
+SSL Cipher: TLS_AES_256_GCM_SHA384
 
-ERROR INFO
-----------
-Rule ID: 921110 (/usr/share/modsecurity-crs/rules/REQUEST-921-PROTOCOL-ATTACK.conf)
-Msg: HTTP Request Smuggling Attack
+Request Time: 20:39:09.863513-0500
+Unique ID: YeIlvVqOFYgP5NBhUWaSWwAABxQ
+Remote Host: 108.162.219.105
+User Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.0
+HTTP Referer: https://www.chucknemeth.com/laptop/lenovo-x230/flash-lenovo-x230-coreboot
+HTTP Request: GET /_media/usb-device/ch341a/ch341a-back-pins.jpg?w=600&tok=0579b2 HTTP/2.0
+HTTP Status: 200
+SSL Protocol: TLSv1.3
+SSL Cipher: TLS_AES_256_GCM_SHA384
+
+Request Time: 20:39:11.524603-0500
+Unique ID: YeIlv975zdFGMETO5h9maAAAgQk
+Remote Host: 108.162.219.9
+User Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.0
+HTTP Referer: https://www.chucknemeth.com/laptop/lenovo-x230/flash-lenovo-x230-coreboot
+HTTP Request: GET /linux HTTP/2.0
+HTTP Status: 200
+SSL Protocol: TLSv1.3
+SSL Cipher: TLS_AES_256_GCM_SHA384
+
+Request Time: 20:39:11.678392-0500
+Unique ID: YeIlv975zdFGMETO5h9maQAAhgk
+Remote Host: 108.162.219.9
+User Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.0
+HTTP Referer: https://www.chucknemeth.com/linux
+HTTP Request: GET /lib/exe/taskrunner.php?id=linux&1642210751 HTTP/2.0
+HTTP Status: 200
+SSL Protocol: TLSv1.3
+SSL Cipher: TLS_AES_256_GCM_SHA384
+```
+
+**Error log:**
+Run with `mali -e`:
+```
+`Time: Fri Jan 14 19:13:08.042305 2022
+Unique ID: YeIRlN75zdFGMETO5h9l7AAAlxQ
+Remote Host: 108.162.219.37
+CRS Rule ID: 942360 (/usr/share/modsecurity-crs/rules/REQUEST-942-APPLICATION-ATTACK-SQLI.conf)
+HTTP Referer: https://www.chucknemeth.com/proxmox/kvm/kvm-automated
+Client: 108.162.219.37
+Msg: Detects concatenated basic SQL injection and SQLLFI attempts
 Severity: CRITICAL
 
-Rule ID: 921110 (/usr/share/modsecurity-crs/rules/REQUEST-921-PROTOCOL-ATTACK.conf)
-Msg: HTTP Request Smuggling Attack
+Time: Fri Jan 14 19:13:08.042798 2022
+Unique ID: YeIRlN75zdFGMETO5h9l7AAAlxQ
+Remote Host: 108.162.219.37
+CRS Rule ID: 949110 (/usr/share/modsecurity-crs/rules/REQUEST-949-BLOCKING-EVALUATION.conf)
+HTTP Referer: https://www.chucknemeth.com/proxmox/kvm/kvm-automated
+Client: 108.162.219.37
+Msg: Inbound Anomaly Score Exceeded (Total Score: 5)
 Severity: CRITICAL
 
-Rule ID: 932100 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
-Msg: Remote Command Execution: Unix Command Injection
-Severity: CRITICAL
+Time: Fri Jan 14 19:13:08.070661 2022
+Unique ID: YeIRlN75zdFGMETO5h9l7AAAlxQ
+Remote Host: 108.162.219.37
+CRS Rule ID: 980130 (/usr/share/modsecurity-crs/rules/RESPONSE-980-CORRELATION.conf)
+HTTP Referer: https://www.chucknemeth.com/proxmox/kvm/kvm-automated
+Client: 108.162.219.37
+Msg: Inbound Anomaly Score Exceeded (Total Inbound Score: 5 - SQLI=5,XSS=0,RFI=0,LFI=0,RCE=0,PHPI=0,HTTP=0,SESS=0): individual paranoia level scores: 5, 0, 0, 0
 
-Rule ID: 932105 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
-Msg: Remote Command Execution: Unix Command Injection
-Severity: CRITICAL
+Time: Fri Jan 14 19:43:46.406725 2022
+Unique ID: YeIYwlqOFYgP5NBhUWaSVAAAABA
+Remote Host: 183.136.225.56
+CRS Rule ID: 920350 (/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf)
+HTTP Referer: -
+Client: 183.136.225.56
+Msg: Host header is a numeric IP address
+Severity: WARNING
 
-Rule ID: 932110 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
-Msg: Remote Command Execution: Windows Command Injection
-Severity: CRITICAL
-
-Rule ID: 932115 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
-Msg: Remote Command Execution: Windows Command Injection
-Severity: CRITICAL
-
-Rule ID: 932130 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
-Msg: Remote Command Execution: Unix Shell Expression Found
-Severity: CRITICAL
-
-Rule ID: 932200 (/usr/share/modsecurity-crs/rules/REQUEST-932-APPLICATION-ATTACK-RCE.conf)
-Msg: RCE Bypass Technique
-Severity: CRITICAL
-
-Rule ID: 941320 (/usr/share/modsecurity-crs/rules/REQUEST-941-APPLICATION-ATTACK-XSS.conf)
-Msg: Possible XSS Attack Detected - HTML Tag Handler
-Severity: CRITICAL
-
-<--SNIP-->
+Time: Fri Jan 14 19:47:05.394211 2022
+Unique ID: YeIZid75zdFGMETO5h9mKwAAAIE
+Remote Host: 128.14.134.134
+CRS Rule ID: 920350 (/usr/share/modsecurity-crs/rules/REQUEST-920-PROTOCOL-ENFORCEMENT.conf)
+HTTP Referer: -
+Client: 128.14.134.134
+Msg: Host header is a numeric IP address
+Severity: WARNING
 ```
 
 -----

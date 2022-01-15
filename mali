@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 from os import system
 import re
@@ -9,10 +10,51 @@ import time
 access_log = "/var/log/apache2/access.log"
 error_log = "/var/log/apache2/error.log"
 
+###########################################################
+# ARGUMENTS
+###########################################################
+parser = argparse.ArgumentParser(prog='mali',
+                                epilog='Hope you enjoy! :)',
+                                description="ModSecurity Apache Log Inspector")
+
+parser.add_argument('-a', '--access',
+                    action='store_true',
+                    help='Watch ' + access_log)
+
+parser.add_argument('-e', '--error',
+                    action='store_true',
+                    help='Watch ' + error_log)
+
+args = parser.parse_args()
+
+if len(sys.argv) == 0:
+    print("Please use -a, -e or -h flags")
+
+
+###########################################################
+# Colors
+###########################################################
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    ERROR = '\033[91;1m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+###########################################################
+# Clear the screen
+###########################################################
 def clear():
     system('clear')
 
-# "tail" log file function
+###########################################################
+# "tail -f" log file
+###########################################################
 def tail(file, n=1, bs=1024):
     f = open(file)
     f.seek(0,2)
@@ -29,9 +71,11 @@ def tail(file, n=1, bs=1024):
     f.close()
     return lines
 
+###########################################################
 # Parse access.log
+###########################################################
 def accessParse():
-    alines = tail(access_log, 1)
+    alines = tail(access_log, 10)
 
     for line in alines:
         alist = line.split(']')
@@ -46,26 +90,30 @@ def accessParse():
                 (key,val) = strip.split(' ', 1)
                 access_dict[key] = val
 
+        print(f"{bcolors.BOLD}Request Time:{bcolors.ENDC} {access_dict['time']}")
+
+        elines = tail(error_log, 15)
+        uidcheck = ''.join(elines)
+        if re.findall(access_dict['unique_id'], uidcheck):
+            print(f"{bcolors.BOLD}Unique ID:{bcolors.ENDC} {bcolors.ERROR}{access_dict['unique_id']}{bcolors.ENDC}")
+        else:
+            print(f"{bcolors.BOLD}Unique ID:{bcolors.ENDC} {access_dict['unique_id']}")
+
         print(
-            f'CURRENT REQUEST\n'
-            f'---------------\n'
-            f"Request Time: {access_dict['time']}\n"
-            f"Unique ID: {access_dict['unique_id']}\n"
-            f"Remote Host: {access_dict['remote_host']}\n"
-            f"User Agent: {access_dict['remote_user_agent']}\n"
-            f"HTTP Referer: {access_dict['http_referer']}\n"
-            f"HTTP Request: {access_dict['http_request']}\n"
-            f"HTTP Status: {access_dict['http_status']}\n"
-            f"SSL Protocol: {access_dict['ssl_protocol']}\n"
-            f"SSL Cipher: {access_dict['ssl_cipher']}\n"
-            f'\n'
-            f"ERROR INFO\n"
-            f"----------"
+            f"{bcolors.BOLD}Remote Host:{bcolors.ENDC} {access_dict['remote_host']}\n"
+            f"{bcolors.BOLD}User Agent:{bcolors.ENDC} {access_dict['remote_user_agent']}\n"
+            f"{bcolors.BOLD}HTTP Referer:{bcolors.ENDC} {access_dict['http_referer']}\n"
+            f"{bcolors.BOLD}HTTP Request:{bcolors.ENDC} {access_dict['http_request']}\n"
+            f"{bcolors.BOLD}HTTP Status:{bcolors.ENDC} {access_dict['http_status']}\n"
+            f"{bcolors.BOLD}SSL Protocol:{bcolors.ENDC} {access_dict['ssl_protocol']}\n"
+            f"{bcolors.BOLD}SSL Cipher:{bcolors.ENDC} {access_dict['ssl_cipher']}\n"
         )
 
+###########################################################
 # Parse error.log
+###########################################################
 def errorParse():
-    elines = tail(error_log, 100)
+    elines = tail(error_log, 20)
     for line in elines:
         if line.startswith('[time'):
             elist = line.split('] ')
@@ -91,22 +139,37 @@ def errorParse():
                 error_dict[key] = value
 
                 if "unique_id" in error_dict:
-                    if error_dict['unique_id'] == access_dict['unique_id']:
-                        if "file" in error_dict:
-                            print(f"Rule ID: {error_dict['id']} ({error_dict['file']})" )
-                        else:
-                            print(f"Rule ID: {error_dict['id']}")
-                        print(f"Msg: {error_dict['msg']}")
-                        if "severity" in error_dict:
-                            print(f"Severity: {error_dict['severity']}")
+                    if "file" in error_dict:
+                        print(
+                            f"{bcolors.ERROR}Time:{bcolors.ENDC} {error_dict['time']}\n"
+                            f"{bcolors.ERROR}Unique ID:{bcolors.ENDC} {error_dict['unique_id']}\n"
+                            f"{bcolors.ERROR}Remote Host:{bcolors.ENDC} {error_dict['client']}\n"
+                            f"{bcolors.ERROR}CRS Rule ID:{bcolors.ENDC} {error_dict['id']} ({error_dict['file']})\n"
+                            f"{bcolors.ERROR}HTTP Referer:{bcolors.ENDC} {error_dict['http_referer']}\n"
+                            f"{bcolors.ERROR}Client:{bcolors.ENDC} {error_dict['client']}"
+                        )
+                    else:
+                        print(
+                            f"{bcolors.ERROR}CRS Rule ID:{bcolors.ENDC} {error_dict['id']}\n"
+                            f"{bcolors.ERROR}HTTP Referer:{bcolors.ENDC} {error_dict['http_referer']}\n"
+                            f"{bcolors.ERROR}Client:{bcolors.ENDC} {error_dict['client']}"
+                        )
+                    print(f"{bcolors.ERROR}Msg:{bcolors.ENDC} {error_dict['msg']}")
+                    if "severity" in error_dict:
+                        print(f"{bcolors.ERROR}Severity:{bcolors.ENDC} {error_dict['severity']}\n")
+                    else:
                         print()
 
-
-# Watch access.log for changes
+###########################################################
+# Watch log file for changes
+###########################################################
 class Watcher(object):
     def __init__(self):
         self._cached_stamp = 0
-        self.filename = access_log
+        if args.access:
+            self.filename = access_log
+        if args.error:
+            self.filename = error_log
 
     def monitor(self):
         stamp = os.stat(self.filename).st_mtime
@@ -117,13 +180,16 @@ class Watcher(object):
             self._cached_stamp = stamp
 
             # Process last request in access.log
-            accessParse()
+            if args.access:
+                accessParse()
 
             # Process error requests
-            errorParse()
+            if args.error:
+                errorParse()
 
-
+###########################################################
 # Run!
+###########################################################
 follow = Watcher()
 while True:
     try:
@@ -133,4 +199,4 @@ while True:
         print('\nDone')
         break
     except:
-        print(f'Unhandled error: {sys.exc_info()[0]}')
+        print(f'Unhandled error: {sys.exc_info()}')

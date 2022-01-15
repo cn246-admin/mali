@@ -7,6 +7,7 @@ Helps administrators identify ModSecurity triggers for debugging/whitelisting.
 Written using [Python 3.9's Standard Library](https://docs.python.org/3.9/library/)
 so there should be no need for installing external packages.
 
+<br>
 
 ## Setup
 This was coded and tested on a Debian 11 install of [apache2](https://packages.debian.org/bullseye/apache2)
@@ -35,6 +36,8 @@ Other operating systems may or may not behave differently!
      sudo systemctl reload apache2
      ```
 
+<br>
+
 ### Install MALI
 -    As the logfiles are owned by `root:adm`, it's best to add the user who will be using
      MALI to group `adm`:
@@ -50,8 +53,9 @@ Other operating systems may or may not behave differently!
 -    Set the location of Apache's access.log and error.log if they differ from the
      defaults (`/var/log/{apache,error}.log`).
 
+<br>
 
-## Use
+## Use MALI
 Run it in a terminal with either the `-a` flag for access.log or the `-e` flag
 for error.log and it will update the information as requests are made.
 
@@ -62,6 +66,7 @@ This works great if you use a [screen](https://www.gnu.org/software/screen/) or 
 with the screen split down the middle. One side is running `mali -a` and the other
 side running `mali -e`.
 
+<br>
 
 ## Output
 **Access log:**

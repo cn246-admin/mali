@@ -61,10 +61,10 @@ def tail(file, n=1, bs=1024):
     l = f.read(1).count('\n')
     B = f.tell()
     while n >= l and B > 0:
-            block = min(bs, B)
-            B -= block
-            f.seek(B, 0)
-            l += f.read(block).count('\n')
+        block = min(bs, B)
+        B -= block
+        f.seek(B, 0)
+        l += f.read(block).count('\n')
     f.seek(B, 0)
     l = min(l,n)
     lines = f.readlines()[-l:]

@@ -172,38 +172,35 @@ def error_parse():
                         print()
 
 
-class Watcher():
-    """Class for watching log file"""
-    def __init__(self):
-        self._cached_stamp = 0
+def monitor():
+    """Check file modification time and follow the log file"""
+    if args.access:
+        log_file = access_log
+    if args.error:
+        log_file = error_log
+
+    _cached_stamp = 0
+    stamp = os.stat(log_file).st_mtime
+    if stamp != _cached_stamp:
+        # Clear the screen
+        clear()
+
+        # update timestamp
+        _cached_stamp = stamp
+
+        # Process last request in access.log
         if args.access:
-            self.filename = access_log
+            access_parse()
+
+        # Process error requests
         if args.error:
-            self.filename = error_log
-
-    def monitor(self):
-        """Check file modification time and follow the log file"""
-        stamp = os.stat(self.filename).st_mtime
-        if stamp != self._cached_stamp:
-            # Clear the screen
-            clear()
-
-            self._cached_stamp = stamp
-
-            # Process last request in access.log
-            if args.access:
-                access_parse()
-
-            # Process error requests
-            if args.error:
-                error_parse()
+            error_parse()
 
 
-follow = Watcher()
 while True:
     try:
         time.sleep(1)
-        follow.monitor()
+        monitor()
     except KeyboardInterrupt:
         print('\nDone')
         break

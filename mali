@@ -14,6 +14,8 @@ import re
 import sys
 import time
 
+from dataclasses import dataclass
+
 access_log = "/var/log/apache2/access.log"
 error_log = "/var/log/apache2/error.log"
 
@@ -35,18 +37,15 @@ if len(sys.argv) == 0:
     print("Please use -a, -e or -h flags")
 
 
+@dataclass
 class bcolors:
     """Color codes for colored output"""
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    ERROR = '\033[91;1m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    okblue: str = '\033[94m'
+    okgreen: str = '\033[92m'
+    warning: str = '\033[93m'
+    error: str = '\033[91;1m'
+    endc: str = '\033[0m'
+    bold: str = '\033[1m'
 
 
 def clear():
@@ -100,23 +99,23 @@ def access_parse():
                 (key,val) = strip.split(' ', 1)
                 access_dict[key] = val
 
-        print(f"{bcolors.BOLD}Request Time:{bcolors.ENDC} {access_dict['time']}")
+        print(f"{bcolors.bold}Request Time:{bcolors.endc} {access_dict['time']}")
 
         elines = tail(error_log, 15)
         uidcheck = ''.join(elines)
         if re.findall(access_dict['unique_id'], uidcheck):
-            print(f"{bcolors.BOLD}Unique ID:{bcolors.ENDC} {bcolors.ERROR}{access_dict['unique_id']}{bcolors.ENDC}")
+            print(f"{bcolors.bold}Unique ID:{bcolors.endc} {bcolors.error}{access_dict['unique_id']}{bcolors.endc}")
         else:
-            print(f"{bcolors.BOLD}Unique ID:{bcolors.ENDC} {access_dict['unique_id']}")
+            print(f"{bcolors.bold}Unique ID:{bcolors.endc} {access_dict['unique_id']}")
 
         print(
-            f"{bcolors.BOLD}Remote Host:{bcolors.ENDC} {access_dict['remote_host']}\n"
-            f"{bcolors.BOLD}User Agent:{bcolors.ENDC} {access_dict['remote_user_agent']}\n"
-            f"{bcolors.BOLD}HTTP Referer:{bcolors.ENDC} {access_dict['http_referer']}\n"
-            f"{bcolors.BOLD}HTTP Request:{bcolors.ENDC} {access_dict['http_request']}\n"
-            f"{bcolors.BOLD}HTTP Status:{bcolors.ENDC} {access_dict['http_status']}\n"
-            f"{bcolors.BOLD}SSL Protocol:{bcolors.ENDC} {access_dict['ssl_protocol']}\n"
-            f"{bcolors.BOLD}SSL Cipher:{bcolors.ENDC} {access_dict['ssl_cipher']}\n"
+            f"{bcolors.bold}Remote Host:{bcolors.endc} {access_dict['remote_host']}\n"
+            f"{bcolors.bold}User Agent:{bcolors.endc} {access_dict['remote_user_agent']}\n"
+            f"{bcolors.bold}HTTP Referer:{bcolors.endc} {access_dict['http_referer']}\n"
+            f"{bcolors.bold}HTTP Request:{bcolors.endc} {access_dict['http_request']}\n"
+            f"{bcolors.bold}HTTP Status:{bcolors.endc} {access_dict['http_status']}\n"
+            f"{bcolors.bold}SSL Protocol:{bcolors.endc} {access_dict['ssl_protocol']}\n"
+            f"{bcolors.bold}SSL Cipher:{bcolors.endc} {access_dict['ssl_cipher']}\n"
         )
 
 
@@ -153,22 +152,22 @@ def error_parse():
                 if "unique_id" in error_dict:
                     if "file" in error_dict:
                         print(
-                            f"{bcolors.ERROR}Time:{bcolors.ENDC} {error_dict['time']}\n"
-                            f"{bcolors.ERROR}Unique ID:{bcolors.ENDC} {error_dict['unique_id']}\n"
-                            f"{bcolors.ERROR}Remote Host:{bcolors.ENDC} {error_dict['client']}\n"
-                            f"{bcolors.ERROR}CRS Rule ID:{bcolors.ENDC} {error_dict['id']} ({error_dict['file']})\n"
-                            f"{bcolors.ERROR}HTTP Referer:{bcolors.ENDC} {error_dict['http_referer']}\n"
-                            f"{bcolors.ERROR}Client:{bcolors.ENDC} {error_dict['client']}"
+                            f"{bcolors.error}Time:{bcolors.endc} {error_dict['time']}\n"
+                            f"{bcolors.error}Unique ID:{bcolors.endc} {error_dict['unique_id']}\n"
+                            f"{bcolors.error}Remote Host:{bcolors.endc} {error_dict['client']}\n"
+                            f"{bcolors.error}CRS Rule ID:{bcolors.endc} {error_dict['id']} ({error_dict['file']})\n"
+                            f"{bcolors.error}HTTP Referer:{bcolors.endc} {error_dict['http_referer']}\n"
+                            f"{bcolors.error}Client:{bcolors.endc} {error_dict['client']}"
                         )
                     else:
                         print(
-                            f"{bcolors.ERROR}CRS Rule ID:{bcolors.ENDC} {error_dict['id']}\n"
-                            f"{bcolors.ERROR}HTTP Referer:{bcolors.ENDC} {error_dict['http_referer']}\n"
-                            f"{bcolors.ERROR}Client:{bcolors.ENDC} {error_dict['client']}"
+                            f"{bcolors.error}CRS Rule ID:{bcolors.endc} {error_dict['id']}\n"
+                            f"{bcolors.error}HTTP Referer:{bcolors.endc} {error_dict['http_referer']}\n"
+                            f"{bcolors.error}Client:{bcolors.endc} {error_dict['client']}"
                         )
-                    print(f"{bcolors.ERROR}Msg:{bcolors.ENDC} {error_dict['msg']}")
+                    print(f"{bcolors.error}Msg:{bcolors.endc} {error_dict['msg']}")
                     if "severity" in error_dict:
-                        print(f"{bcolors.ERROR}Severity:{bcolors.ENDC} {error_dict['severity']}\n")
+                        print(f"{bcolors.error}Severity:{bcolors.endc} {error_dict['severity']}\n")
                     else:
                         print()
 

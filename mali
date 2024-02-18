@@ -91,7 +91,6 @@ def access_parse():
     for line in alines:
         alist = line.split(']')
 
-        global access_dict
         access_dict = {}
         for i in alist:
             strip = i.lstrip()
@@ -132,7 +131,6 @@ def error_parse():
         if line.startswith('[time'):
             elist = line.split('] ')
 
-            global error_dict
             error_dict = {}
             for i in elist:
                 lst = i.lstrip()

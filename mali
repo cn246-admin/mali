@@ -2,7 +2,6 @@
 
 import argparse
 import os
-from os import system
 import re
 import sys
 import time
@@ -44,7 +43,7 @@ class bcolors:
 
 def clear():
     """Clear the screen"""
-    system('clear')
+    os.system('clear')
 
 
 def tail(file, n=1, bs=1024):

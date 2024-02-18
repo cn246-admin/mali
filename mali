@@ -72,7 +72,7 @@ def tail(file, n=1, bs=1024):
     return lines
 
 
-def accessParse():
+def access_parse():
     """Parse Apache access log
 
     Prints:
@@ -113,7 +113,7 @@ def accessParse():
         )
 
 
-def errorParse():
+def error_parse():
     """Parse Apache error log
 
     Prints:
@@ -187,11 +187,11 @@ class Watcher():
 
             # Process last request in access.log
             if args.access:
-                accessParse()
+                access_parse()
 
             # Process error requests
             if args.error:
-                errorParse()
+                error_parse()
 
 
 follow = Watcher()

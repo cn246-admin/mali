@@ -10,9 +10,6 @@ import time
 access_log = "/var/log/apache2/access.log"
 error_log = "/var/log/apache2/error.log"
 
-###########################################################
-# ARGUMENTS
-###########################################################
 parser = argparse.ArgumentParser(prog='mali',
                                 epilog='Hope you enjoy! :)',
                                 description="ModSecurity Apache Log Inspector")
@@ -31,9 +28,6 @@ if len(sys.argv) == 0:
     print("Please use -a, -e or -h flags")
 
 
-###########################################################
-# Colors
-###########################################################
 class bcolors:
     """Color codes for colored output"""
     HEADER = '\033[95m'
@@ -47,16 +41,12 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-###########################################################
-# Clear the screen
-###########################################################
+
 def clear():
     """Clear the screen"""
     system('clear')
 
-###########################################################
-# "tail -f" log file
-###########################################################
+
 def tail(file, n=1, bs=1024):
     """Print lines of a file
 
@@ -82,9 +72,7 @@ def tail(file, n=1, bs=1024):
 
     return lines
 
-###########################################################
-# Parse access.log
-###########################################################
+
 def accessParse():
     """Parse Apache access log
 
@@ -125,9 +113,7 @@ def accessParse():
             f"{bcolors.BOLD}SSL Cipher:{bcolors.ENDC} {access_dict['ssl_cipher']}\n"
         )
 
-###########################################################
-# Parse error.log
-###########################################################
+
 def errorParse():
     """Parse Apache error log
 
@@ -181,9 +167,7 @@ def errorParse():
                     else:
                         print()
 
-###########################################################
-# Watch log file for changes
-###########################################################
+
 class Watcher():
     """Class for watching log file"""
     def __init__(self):
@@ -210,9 +194,7 @@ class Watcher():
             if args.error:
                 errorParse()
 
-###########################################################
-# Run!
-###########################################################
+
 follow = Watcher()
 while True:
     try:
